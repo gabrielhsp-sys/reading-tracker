@@ -1,18 +1,24 @@
 // FR-01 authors list and author detail.
-import { getAuthor, deleteAuthor } from '../store.js';
+import { getAuthor, getBooks, deleteAuthor } from '../store.js';
 import { STR, MISSING } from '../strings.js';
 import { h, clear, formatDate, formatYear, confirmDialog, toast, alertDialog } from '../ui.js';
 import { loadAll, pageHeader, emptyState, tableWrap, td } from './common.js';
 import { openAuthorForm } from '../forms/author-form.js';
 
 async function confirmDeleteAuthor(author) {
+  // FR-01: a linked author cannot be deleted; show the books instead of asking to confirm.
+  const linked = (await getBooks()).filter((b) => (b.authorIds || []).includes(author.id));
+  if (linked.length) {
+    await alertDialog(STR.errors.authorLinked(linked.length, linked.map((b) => b.title)), STR.titles.cannotDeleteAuthor);
+    return false;
+  }
   const ok = await confirmDialog(STR.confirm.deleteAuthor(author.name), { confirmLabel: STR.actions.delete, danger: true });
   if (!ok) return false;
   try {
     await deleteAuthor(author.id);
   } catch (error) {
     // 409: the author is linked to books; the message names them.
-    await alertDialog(error.message, 'Cannot delete this author');
+    await alertDialog(error.message, STR.titles.cannotDeleteAuthor);
     return false;
   }
   toast(STR.text.deleted);
@@ -36,7 +42,7 @@ export async function renderAuthors(view, refresh) {
         h('th', { scope: 'col' }, STR.fields.birthDate),
         h('th', { scope: 'col' }, STR.fields.deathDate),
         h('th', { scope: 'col', class: 'num' }, STR.fields.books),
-        h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Actions')),
+        h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, STR.fields.actions)),
       )),
       h('tbody', {}, authors.map((a) => h('tr', {},
         td(STR.fields.name, h('a', { href: `#/authors/${a.id}` }, a.name), 'cell-title'),
@@ -44,7 +50,7 @@ export async function renderAuthors(view, refresh) {
         td(STR.fields.birthDate, formatDate(a.birthDate)),
         td(STR.fields.deathDate, formatDate(a.deathDate)),
         td(STR.fields.books, String(bookCount.get(a.id) || 0), 'num'),
-        td('Actions', h('div', { class: 'row-actions' },
+        td(STR.fields.actions, h('div', { class: 'row-actions' },
           h('button', { type: 'button', class: 'btn btn--small', 'aria-label': `${STR.actions.edit} ${a.name}`, on: { click: () => openAuthorForm(a, refresh) } }, STR.actions.edit),
           h('button', {
             type: 'button', class: 'btn btn--small btn--danger-quiet', 'aria-label': `${STR.actions.delete} ${a.name}`,
@@ -55,7 +61,7 @@ export async function renderAuthors(view, refresh) {
     ));
 
   clear(view).append(
-    pageHeader(STR.titles.authors, `${STR.text.authorsIntro} ${STR.text.count(authors.length, 'author', 'authors')}.`,
+    pageHeader(STR.titles.authors, `${STR.text.authorsIntro} ${STR.text.authorsCount(authors.length)}.`,
       h('button', { type: 'button', class: 'btn btn--primary', on: { click: () => openAuthorForm(null, refresh) } }, STR.actions.newAuthor)),
     body,
   );
@@ -67,7 +73,7 @@ export async function renderAuthorDetail(view, refresh, id) {
     author = await getAuthor(id);
   } catch (error) {
     if (error.status === 404) {
-      clear(view).append(pageHeader(STR.titles.notFound, STR.text.authorNotFound), h('p', {}, h('a', { href: '#/authors' }, `${STR.actions.back} to ${STR.titles.authors.toLowerCase()}`)));
+      clear(view).append(pageHeader(STR.titles.notFound, STR.text.authorNotFound), h('p', {}, h('a', { href: '#/authors' }, STR.text.backTo(STR.titles.authors))));
       return;
     }
     throw error;

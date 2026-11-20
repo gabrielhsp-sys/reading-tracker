@@ -5,13 +5,14 @@ export const MISSING = '-';
 
 export const STR = {
   appName: 'Reading Tracker',
-  nav: { log: 'Reading log', books: 'Books', authors: 'Authors', wishlist: 'Wishlist' },
+  nav: { label: 'Main', log: 'Reading log', books: 'Books', authors: 'Authors', wishlist: 'Wishlist', skip: 'Skip to content' },
   actions: {
     add: 'Add', save: 'Save', cancel: 'Cancel', edit: 'Edit', delete: 'Delete', view: 'View',
     confirm: 'Confirm', close: 'Close', back: 'Back', remove: 'Remove',
     newAuthor: 'New author', newBook: 'New book', addReading: 'Add reading',
     createTheme: 'Create theme', addAuthor: 'Add author', addTheme: 'Add theme',
-    resetData: 'Reset data', clearFilters: 'Clear filters',
+    resetData: 'Reset data', clearFilters: 'Clear filters', ok: 'OK',
+    addFirstReading: 'Add a first reading',
   },
   fields: {
     name: 'Name', nationality: 'Nationality', birthDate: 'Birth date', deathDate: 'Death date',
@@ -20,7 +21,7 @@ export const STR = {
     newTheme: 'New theme', book: 'Book', status: 'Status', yearRead: 'Year read', grade: 'Grade',
     recommendedBy: 'Recommended by', priority: 'Priority', notes: 'Notes', readings: 'Readings',
     books: 'Books', search: 'Search title or author', year: 'Year read', theme: 'Theme',
-    author: 'Author',
+    author: 'Author', actions: 'Actions', yearShort: 'Year',
   },
   hints: {
     publicationYear: 'Negative for BC (e.g. -429). There is no year 0.',
@@ -28,15 +29,18 @@ export const STR = {
     yearRead: 'Required for Read, optional for Abandoned.',
     priority: 'Only for Want to read.',
     authorsPicker: 'Choose from existing authors.',
-    themesPicker: 'Choose an existing theme or create a new one.',
+    themesPicker: 'Choose an existing theme or create a new one (a new theme is saved right away).',
     firstReading: 'Optional. Add the first reading now, e.g. to put the book on your wishlist.',
   },
-  placeholders: { none: '— none —', chooseAuthor: 'Choose an author…', chooseTheme: 'Choose a theme…', any: 'Any' },
+  placeholders: {
+    none: '— none —', chooseAuthor: 'Choose an author…', chooseTheme: 'Choose a theme…', any: 'Any',
+    grade: 'e.g. 8.5', publicationYear: 'e.g. 1866 or -429',
+  },
   titles: {
     log: 'Reading log', books: 'Books', authors: 'Authors', wishlist: 'Wishlist',
     newAuthor: 'New author', editAuthor: 'Edit author', newBook: 'New book', editBook: 'Edit book',
     newReading: 'New reading', editReading: 'Edit reading', firstReading: 'First reading',
-    confirm: 'Please confirm', filters: 'Filters and search', notFound: 'Not found', loading: 'Loading…',
+    confirm: 'Please confirm', cannotDeleteAuthor: 'Cannot delete this author', filters: 'Filters and search', notFound: 'Not found', loading: 'Loading…',
   },
   text: {
     logIntro: 'Every reading, newest first. Click a column header to sort.',
@@ -57,6 +61,10 @@ export const STR = {
     linkedBooks: 'Books',
     born: 'Born', died: 'Died',
     count: (n, one, many) => `${n} ${n === 1 ? one : many}`,
+    booksCount: (n) => `${n} ${n === 1 ? 'book' : 'books'}`,
+    authorsCount: (n) => `${n} ${n === 1 ? 'author' : 'authors'}`,
+    backTo: (label) => `Back to ${label.toLowerCase()}`,
+    themeCreated: (name) => `Theme “${name}” created.`,
     readingsCount: (n) => `${n} ${n === 1 ? 'reading' : 'readings'}`,
     shown: (n, total) => `Showing ${n} of ${total} readings`,
     sortBy: (label) => `Sort by ${label}`,
@@ -80,7 +88,9 @@ export const STR = {
   },
   errors: {
     validationFailed: 'Validation failed',
-    notFound: (what) => `${what} not found`,
+    authorNotFound: 'Author not found',
+    bookNotFound: 'Book not found',
+    readingNotFound: 'Reading not found',
     authorLinked: (n, titles) => `Author is linked to ${n} ${n === 1 ? 'book' : 'books'}: ${titles.join(', ')}`,
     nameRequired: 'Name is required',
     nameDuplicate: 'An author with this name already exists',

@@ -50,7 +50,15 @@ async function onReset() {
   await route({ focus: false });
 }
 
+/** Fills the static page text from strings.js (data-text → text, data-label → aria-label). */
+function applyStaticText() {
+  const lookup = (path) => path.split('.').reduce((obj, key) => obj?.[key], STR);
+  document.querySelectorAll('[data-text]').forEach((el) => { el.textContent = lookup(el.dataset.text); });
+  document.querySelectorAll('[data-label]').forEach((el) => { el.setAttribute('aria-label', lookup(el.dataset.label)); });
+}
+
 async function start() {
+  applyStaticText();
   initDialogs();
   document.getElementById('reset-data').addEventListener('click', onReset);
   try {

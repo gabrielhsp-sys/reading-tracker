@@ -15,7 +15,7 @@ const F = STR.fields;
 export function readingFields(reading = {}, prefix = '') {
   const status = selectControl(STATUSES, reading.status ?? STATUS.WANT_TO_READ, { includeEmpty: false });
   const yearRead = h('input', { type: 'text', inputmode: 'numeric', autocomplete: 'off', value: reading.yearRead ?? '' });
-  const grade = h('input', { type: 'text', inputmode: 'decimal', autocomplete: 'off', value: reading.grade ?? '', placeholder: 'e.g. 8.5' });
+  const grade = h('input', { type: 'text', inputmode: 'decimal', autocomplete: 'off', value: reading.grade ?? '', placeholder: STR.placeholders.grade });
   const recommendedBy = h('input', { type: 'text', value: reading.recommendedBy ?? '' });
   const priority = selectControl(PRIORITIES, reading.priority);
   const notes = h('textarea', { rows: '3' });

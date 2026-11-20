@@ -29,18 +29,18 @@ export async function renderBooks(view, refresh) {
       h('thead', {}, h('tr', {},
         h('th', { scope: 'col' }, STR.fields.title),
         h('th', { scope: 'col' }, STR.fields.authors),
-        h('th', { scope: 'col', class: 'num' }, 'Year'),
+        h('th', { scope: 'col', class: 'num' }, STR.fields.yearShort),
         h('th', { scope: 'col' }, STR.fields.form),
         h('th', { scope: 'col', class: 'num' }, STR.fields.readings),
-        h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Actions')),
+        h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, STR.fields.actions)),
       )),
       h('tbody', {}, books.map((book) => h('tr', {},
         td(STR.fields.title, h('a', { href: `#/books/${book.id}`, class: 'book-title' }, book.title), 'cell-title'),
         td(STR.fields.authors, authorNames(book, data).join(', ') || MISSING),
-        td('Year', formatYear(book.publicationYear), 'num'),
+        td(STR.fields.yearShort, formatYear(book.publicationYear), 'num'),
         td(STR.fields.form, show(book.form)),
         td(STR.fields.readings, String(readingCount.get(book.id) || 0), 'num'),
-        td('Actions', h('div', { class: 'row-actions' },
+        td(STR.fields.actions, h('div', { class: 'row-actions' },
           h('button', { type: 'button', class: 'btn btn--small', 'aria-label': `${STR.actions.edit} ${book.title}`, on: { click: () => openBookForm(book, refresh) } }, STR.actions.edit),
           h('button', {
             type: 'button', class: 'btn btn--small btn--danger-quiet', 'aria-label': `${STR.actions.delete} ${book.title}`,
@@ -51,7 +51,7 @@ export async function renderBooks(view, refresh) {
     ));
 
   clear(view).append(
-    pageHeader(STR.titles.books, `${STR.text.booksIntro} ${STR.text.count(books.length, 'book', 'books')}.`,
+    pageHeader(STR.titles.books, `${STR.text.booksIntro} ${STR.text.booksCount(books.length)}.`,
       h('button', { type: 'button', class: 'btn btn--primary', on: { click: () => openBookForm(null, (saved) => { location.hash = `#/books/${saved.id}`; }) } }, STR.actions.newBook)),
     body,
   );
@@ -67,7 +67,7 @@ export async function renderBookDetail(view, refresh, id) {
     book = await getBook(id);
   } catch (error) {
     if (error.status === 404) {
-      clear(view).append(pageHeader(STR.titles.notFound, STR.text.bookNotFound), h('p', {}, h('a', { href: '#/books' }, `${STR.actions.back} to ${STR.titles.books.toLowerCase()}`)));
+      clear(view).append(pageHeader(STR.titles.notFound, STR.text.bookNotFound), h('p', {}, h('a', { href: '#/books' }, STR.text.backTo(STR.titles.books))));
       return;
     }
     throw error;

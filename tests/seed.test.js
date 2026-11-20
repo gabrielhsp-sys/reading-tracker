@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateAuthor, validateBook, validateReading, validateThemeName } from '../js/validation.js';
+import { validateAuthor, validateBook, validateReading, validateThemeName, todayIso } from '../js/validation.js';
 
 const seed = JSON.parse(readFileSync(new URL('../data/seed.json', import.meta.url), 'utf8'));
-const today = '2026-11-20';
+const today = todayIso(); // the real date: the seed must stay valid from now on
 
 test('seed has the expected record counts', () => {
   assert.equal(seed.countries.length, 27);

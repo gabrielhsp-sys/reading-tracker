@@ -8,7 +8,7 @@
 // with the same structure the API will send: { status, message, errors: [{ field, message }] }
 //   400 validation failed · 404 not found · 409 conflict (linked author, duplicate name).
 
-import { validateAuthor, validateBook, validateReading, validateThemeName } from './validation.js';
+import { validateAuthor, validateBook, validateReading, validateThemeName, isDuplicateName } from './validation.js';
 import { STR } from './strings.js';
 
 const PREFIX = 'readingTracker.';
@@ -31,7 +31,7 @@ export class StoreError extends Error {
 }
 
 const validationError = (errors) => new StoreError(400, E.validationFailed, errors);
-const notFound = (what) => new StoreError(404, E.notFound(what));
+const notFound = (message) => new StoreError(404, message);
 
 // ---------------------------------------------------------------------------
 // Persistence
@@ -124,11 +124,9 @@ export async function getThemes() {
 export async function saveTheme(theme) {
   const db = await loadDb();
   const name = text(theme.name);
+  if (isDuplicateName(db.themes, name)) throw new StoreError(409, E.themeNameDuplicate);
   const errors = validateThemeName(name, { themes: db.themes });
-  if (errors.length) {
-    if (errors[0].message === E.themeNameDuplicate) throw new StoreError(409, E.themeNameDuplicate);
-    throw validationError(errors);
-  }
+  if (errors.length) throw validationError(errors);
   const saved = upsert(db.themes, { id: null, name });
   writeDb(db);
   return clone(saved);
@@ -144,7 +142,7 @@ export async function getAuthors() {
 
 export async function getAuthor(id) {
   const author = byId((await loadDb()).authors, id);
-  if (!author) throw notFound('Author');
+  if (!author) throw notFound(E.authorNotFound);
   return clone(author);
 }
 
@@ -157,13 +155,13 @@ export async function saveAuthor(input) {
     birthDate: text(input.birthDate),
     deathDate: text(input.deathDate),
   };
-  if (author.id != null && !byId(db.authors, author.id)) throw notFound('Author');
+  if (author.id != null && !byId(db.authors, author.id)) throw notFound(E.authorNotFound);
 
   const errors = validateAuthor(author, { authors: db.authors, countries: db.countries });
-  const conflict = errors.find((e) => e.message === E.nameDuplicate);
-  const others = errors.filter((e) => e !== conflict);
-  if (others.length) throw validationError(errors);
-  if (conflict) throw new StoreError(409, E.nameDuplicate);
+  const duplicate = isDuplicateName(db.authors, author.name, author.id);
+  // A duplicate name alone is a conflict (409); any other invalid field makes it a 400.
+  if (errors.some((e) => !(duplicate && e.field === 'name'))) throw validationError(errors);
+  if (duplicate) throw new StoreError(409, E.nameDuplicate);
 
   const saved = upsert(db.authors, author);
   writeDb(db);
@@ -173,7 +171,7 @@ export async function saveAuthor(input) {
 export async function deleteAuthor(id) {
   const db = await loadDb();
   const author = byId(db.authors, id);
-  if (!author) throw notFound('Author');
+  if (!author) throw notFound(E.authorNotFound);
   const linked = db.books.filter((b) => (b.authorIds || []).includes(author.id));
   if (linked.length) {
     throw new StoreError(409, E.authorLinked(linked.length, linked.map((b) => b.title)));
@@ -192,7 +190,7 @@ export async function getBooks() {
 
 export async function getBook(id) {
   const book = byId((await loadDb()).books, id);
-  if (!book) throw notFound('Book');
+  if (!book) throw notFound(E.bookNotFound);
   return clone(book);
 }
 
@@ -213,7 +211,7 @@ function normalizeBook(input) {
 export async function saveBook(input) {
   const db = await loadDb();
   const book = normalizeBook(input);
-  if (book.id != null && !byId(db.books, book.id)) throw notFound('Book');
+  if (book.id != null && !byId(db.books, book.id)) throw notFound(E.bookNotFound);
   const errors = validateBook(book, {
     authors: db.authors,
     themes: db.themes,
@@ -229,7 +227,7 @@ export async function saveBook(input) {
 export async function deleteBook(id) {
   const db = await loadDb();
   const book = byId(db.books, id);
-  if (!book) throw notFound('Book');
+  if (!book) throw notFound(E.bookNotFound);
   db.readings = db.readings.filter((r) => r.bookId !== book.id);
   db.books = db.books.filter((b) => b.id !== book.id);
   writeDb(db);
@@ -245,13 +243,13 @@ export async function getReadings() {
 
 export async function getBookReadings(bookId) {
   const db = await loadDb();
-  if (!byId(db.books, bookId)) throw notFound('Book');
+  if (!byId(db.books, bookId)) throw notFound(E.bookNotFound);
   return clone(db.readings.filter((r) => r.bookId === Number(bookId)));
 }
 
 export async function getReading(id) {
   const reading = byId((await loadDb()).readings, id);
-  if (!reading) throw notFound('Reading');
+  if (!reading) throw notFound(E.readingNotFound);
   return clone(reading);
 }
 
@@ -272,7 +270,7 @@ function normalizeReading(input) {
 export async function saveReading(input) {
   const db = await loadDb();
   const reading = normalizeReading(input);
-  if (reading.id != null && !byId(db.readings, reading.id)) throw notFound('Reading');
+  if (reading.id != null && !byId(db.readings, reading.id)) throw notFound(E.readingNotFound);
   const book = reading.bookId == null ? null : byId(db.books, reading.bookId);
   const errors = validateReading(reading, { book });
   if (errors.length) throw validationError(errors);
@@ -283,7 +281,7 @@ export async function saveReading(input) {
 
 export async function deleteReading(id) {
   const db = await loadDb();
-  if (!byId(db.readings, id)) throw notFound('Reading');
+  if (!byId(db.readings, id)) throw notFound(E.readingNotFound);
   db.readings = db.readings.filter((r) => r.id !== Number(id));
   writeDb(db);
 }

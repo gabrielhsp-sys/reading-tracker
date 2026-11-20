@@ -12,40 +12,40 @@
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#view">Skip to content</a>
+  <a class="skip-link" href="#view" data-text="nav.skip"></a>
   <header class="site-header">
     <div class="site-header__inner">
-      <a class="brand" href="#/log">Reading Tracker</a>
-      <nav class="site-nav" aria-label="Main">
+      <a class="brand" href="#/log" data-text="appName"></a>
+      <nav class="site-nav" data-label="nav.label">
         <ul>
-          <li><a href="#/log" data-nav="log">Reading log</a></li>
-          <li><a href="#/books" data-nav="books">Books</a></li>
-          <li><a href="#/authors" data-nav="authors">Authors</a></li>
-          <li><a href="#/wishlist" data-nav="wishlist">Wishlist</a></li>
+          <li><a href="#/log" data-nav="log" data-text="nav.log"></a></li>
+          <li><a href="#/books" data-nav="books" data-text="nav.books"></a></li>
+          <li><a href="#/authors" data-nav="authors" data-text="nav.authors"></a></li>
+          <li><a href="#/wishlist" data-nav="wishlist" data-text="nav.wishlist"></a></li>
         </ul>
       </nav>
-      <button type="button" class="btn btn--quiet" id="reset-data">Reset data</button>
+      <button type="button" class="btn btn--quiet" id="reset-data" data-text="actions.resetData"></button>
     </div>
   </header>
 
   <main id="view" class="view" tabindex="-1">
-    <p class="loading">Loading…</p>
+    <p class="loading" data-text="titles.loading"></p>
   </main>
 
   <dialog id="form-dialog" class="dialog dialog--form" aria-labelledby="form-dialog-title">
     <div class="dialog__head">
       <h2 id="form-dialog-title" class="dialog__title"></h2>
-      <button type="button" class="btn btn--icon" data-close aria-label="Close">×</button>
+      <button type="button" class="btn btn--icon" data-close data-label="actions.close">×</button>
     </div>
     <div class="dialog__body" id="form-dialog-body"></div>
   </dialog>
 
   <dialog id="confirm-dialog" class="dialog dialog--confirm" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">
-    <h2 id="confirm-dialog-title" class="dialog__title">Please confirm</h2>
+    <h2 id="confirm-dialog-title" class="dialog__title"></h2>
     <p id="confirm-dialog-message" class="dialog__message"></p>
     <div class="dialog__actions">
-      <button type="button" class="btn" data-answer="no">Cancel</button>
-      <button type="button" class="btn btn--primary" data-answer="yes">Confirm</button>
+      <button type="button" class="btn" data-answer="no"></button>
+      <button type="button" class="btn btn--primary" data-answer="yes"></button>
     </div>
   </dialog>
 

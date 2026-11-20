@@ -105,7 +105,8 @@ export function confirmDialog(message, { confirmLabel = STR.actions.confirm, dan
   const no = dialog.querySelector('[data-answer=no]');
   dialog.querySelector('#confirm-dialog-title').textContent = title;
   dialog.querySelector('#confirm-dialog-message').textContent = message;
-  yes.textContent = alertOnly ? 'OK' : confirmLabel;
+  yes.textContent = alertOnly ? STR.actions.ok : confirmLabel;
+  no.textContent = STR.actions.cancel;
   yes.classList.toggle('btn--danger', danger);
   yes.classList.toggle('btn--primary', !danger);
   no.hidden = alertOnly;
@@ -193,6 +194,7 @@ export function showFieldErrors(root, errors, prefix = '') {
     if (!slot) { orphans.push({ field: name, message }); continue; }
     slot.textContent = message;
     const wrapper = slot.closest('.field');
+    if (!wrapper) continue; // form-level message (e.g. bookId): text only
     wrapper.classList.add('field--invalid');
     const control = wrapper.querySelector('input, select, textarea');
     if (control) {

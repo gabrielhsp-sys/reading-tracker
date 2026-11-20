@@ -1,5 +1,5 @@
 // FR-04 status workflow, as a pure function so the form and the tests share it.
-import { STATUS, allowsYearRead, allowsGrade, allowsPriority } from './domain.js';
+import { allowsYearRead, allowsGrade, allowsPriority } from './domain.js';
 
 const filled = (v) => v !== null && v !== undefined && v !== '';
 
@@ -24,4 +24,3 @@ export function applyStatusChange(reading, newStatus) {
   return { reading: next, cleared: { needsConfirm } };
 }
 
-export { STATUS };

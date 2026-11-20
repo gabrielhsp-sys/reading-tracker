@@ -16,6 +16,11 @@ export function todayIso(now = new Date()) {
 const isBlank = (v) => v === null || v === undefined || String(v).trim() === '';
 const sameName = (a, b) => String(a).trim().toLocaleLowerCase() === String(b).trim().toLocaleLowerCase();
 
+/** True when another record (different id) already has this name, ignoring case. */
+export function isDuplicateName(records, name, id = null) {
+  return !isBlank(name) && records.some((r) => r.id !== id && sameName(r.name, name));
+}
+
 /** True when s is a real calendar date written as YYYY-MM-DD. */
 export function isValidIsoDate(s) {
   if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -36,7 +41,7 @@ export function validateAuthor(author, ctx = {}) {
 
   if (isBlank(author.name)) {
     errors.push({ field: 'name', message: E.nameRequired });
-  } else if (authors.some((a) => a.id !== author.id && sameName(a.name, author.name))) {
+  } else if (isDuplicateName(authors, author.name, author.id ?? null)) {
     errors.push({ field: 'name', message: E.nameDuplicate });
   }
 
@@ -109,7 +114,7 @@ export function validateBook(book, ctx = {}) {
 
 export function validateThemeName(name, ctx = {}) {
   if (isBlank(name)) return [{ field: 'name', message: E.themeNameRequired }];
-  if ((ctx.themes || []).some((t) => sameName(t.name, name))) {
+  if (isDuplicateName(ctx.themes || [], name)) {
     return [{ field: 'name', message: E.themeNameDuplicate }];
   }
   return [];

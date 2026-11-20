@@ -17,7 +17,7 @@ export async function openBookForm(book, onSaved) {
   const b = book || {};
 
   const title = h('input', { type: 'text', value: b.title ?? '', autocomplete: 'off', required: true });
-  const year = h('input', { type: 'text', value: b.publicationYear ?? '', autocomplete: 'off', placeholder: 'e.g. 1866 or -429' });
+  const year = h('input', { type: 'text', value: b.publicationYear ?? '', autocomplete: 'off', placeholder: STR.placeholders.publicationYear });
   const form_ = selectControl(FORMS, b.form);
   const mode = selectControl(MODES, b.mode);
   const content = selectControl(CONTENTS, b.content);
@@ -47,7 +47,7 @@ export async function openBookForm(book, onSaved) {
       const created = await saveTheme({ name });
       themePicker.addAndSelect(created);
       newTheme.value = '';
-      toast(`Theme “${created.name}” created.`);
+      toast(STR.text.themeCreated(created.name));
     } catch (error) {
       showFieldErrors(themePicker.element, [{ field: 'newTheme', message: error.message || STR.text.unexpected }]);
     }
@@ -75,7 +75,7 @@ export async function openBookForm(book, onSaved) {
     firstSection = h('fieldset', { class: 'first-reading' },
       h('legend', {}, STR.titles.firstReading),
       h('p', { class: 'field__hint' }, STR.hints.firstReading),
-      h('label', { class: 'check', for: 'f-add-first-reading' }, firstToggle, ' Add a first reading'),
+      h('label', { class: 'check', for: 'f-add-first-reading' }, firstToggle, ` ${STR.actions.addFirstReading}`),
       body,
     );
   }

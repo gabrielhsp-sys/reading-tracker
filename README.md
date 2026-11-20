@@ -55,7 +55,7 @@ IDs, reset, 400/404/409 errors, cascade delete).
 
 | ID | Requirement | Status | Where to see it |
 |---|---|---|---|
-| FR-01 | Manage authors | Implemented | **Authors**: create, view (click a name), edit, delete. Deleting an author linked to books shows a message naming the books, e.g. "Author is linked to 2 books: …", and nothing is deleted. |
+| FR-01 | Manage authors | Implemented | **Authors**: create, view (click a name), edit, delete. Trying to delete an author linked to books does not delete it: instead it shows a message naming the books, e.g. "Author is linked to 2 books: …". |
 | FR-02 | Manage books | Implemented | **Books**: create, view, edit, delete. Authors and themes are chosen from existing records; a new theme can be created on the spot from the book form (duplicates, ignoring case, are rejected). |
 | FR-03 | Manage readings | Implemented | Book page → **Add reading**, Edit, Delete. **New book** has an optional *First reading* section, so one Save creates the book and its reading (e.g. a wishlist entry). Deleting a book asks for confirmation stating how many readings will be deleted, then deletes them too. |
 | FR-04 | Status workflow | Implemented | Reading form: the five statuses; Read requires a year read; leaving Want to read clears the priority and keeps recommendation and notes; moving to a status that does not allow year read or grade asks for confirmation before clearing them (Cancel keeps the old status). Fields not allowed by the status are disabled. |
@@ -112,7 +112,7 @@ js/
 tests/                  node:test suites (validation, sorting, store, seed)
 ```
 
-Events are attached with `addEventListener` only; there are no `onclick` or `style` attributes.
+Events are attached with `addEventListener` only; there are no `onclick` or `style` attributes. Interface text, including the static text of `index.html`, comes from `js/strings.js`.
 
 ## Prepared for Delivery 2
 
