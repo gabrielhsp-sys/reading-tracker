@@ -36,7 +36,7 @@ export const STR = {
     log: 'Reading log', books: 'Books', authors: 'Authors', wishlist: 'Wishlist',
     newAuthor: 'New author', editAuthor: 'Edit author', newBook: 'New book', editBook: 'Edit book',
     newReading: 'New reading', editReading: 'Edit reading', firstReading: 'First reading',
-    confirm: 'Please confirm', notFound: 'Not found', loading: 'Loading…',
+    confirm: 'Please confirm', filters: 'Filters and search', notFound: 'Not found', loading: 'Loading…',
   },
   text: {
     logIntro: 'Every reading, newest first. Click a column header to sort.',
