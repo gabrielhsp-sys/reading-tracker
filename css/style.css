@@ -8,7 +8,7 @@
   --ink: #1c2321;
   --muted: #56615c;
   --rule: #d5dad6;
-  --rule-strong: #b5bdb8;
+  --rule-strong: #858e89; /* 3:1 against white and paper (WCAG 1.4.11) */
   --accent: #1e5b47;
   --accent-hover: #174a3a;
   --accent-soft: #e3eee9;
@@ -434,7 +434,7 @@ input:disabled, select:disabled, textarea:disabled { background: #eef0ed; color:
   .view { padding-top: var(--space-5); }
   .site-header__inner { gap: var(--space-2); }
   .site-nav { order: 3; flex-basis: 100%; }
-  .site-nav ul { flex-wrap: nowrap; overflow-x: auto; }
+  .site-nav ul { flex-wrap: wrap; }
   #reset-data { margin-left: auto; }
   .field-grid { grid-template-columns: 1fr; }
   .filter:first-child { grid-column: 1 / -1; }
@@ -506,3 +506,7 @@ input:disabled, select:disabled, textarea:disabled { background: #eef0ed; color:
 @media (max-width: 40rem) {
   .table td.grade::before { font-family: var(--sans); font-weight: 400; }
 }
+
+/* UI audit fixes: no sideways scroll at 320px; sort targets at least 24px tall (WCAG 2.5.8). */
+.site-nav { min-width: 0; }
+.sort-btn { min-height: 1.75rem; }
