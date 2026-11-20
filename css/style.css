@@ -501,3 +501,8 @@ input:disabled, select:disabled, textarea:disabled { background: #eef0ed; color:
 .filter-panel > summary:hover { color: var(--ink); }
 .filter-panel[open] > summary { margin-bottom: var(--space-3); }
 .filter-panel .filters { margin-bottom: 0; }
+
+.table .cell-actions .row-actions { flex-wrap: nowrap; }
+@media (max-width: 40rem) {
+  .table td.grade::before { font-family: var(--sans); font-weight: 400; }
+}
